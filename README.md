@@ -16,6 +16,16 @@ Links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Veh
 
 ## Detail description
 
+[//]: # (Image References)
+[image1]: ./readme_img/car_noncar_img.png
+[image2]: ./readme_img/spacial_features.png
+[image3]: ./readme_img/color_histogram.png
+[image4]: ./readme_img/hog_features.png
+[image5]: ./readme_img/feature_normalize.png
+[image6]: ./readme_img/windows.png
+[image7]: ./readme_img/preprocess.png
+[video1]: ./project_video.mp4
+
 ### data 
 
 ### 1. Feature extract 
