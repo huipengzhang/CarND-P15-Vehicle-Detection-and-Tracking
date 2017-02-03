@@ -40,7 +40,7 @@ using the cell#.
 
 **Load Image Directory**
 
-Reading in all the directory of car and non-car images. ('cell #2' )
+Reading in all the directory of car and non-car images. ('cell #2')
 The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
 So I choose my train and testing data from different folder
 The training data from folder:
@@ -58,6 +58,7 @@ Test set:
 * non-cars: GTI
 
 **Data summary**
+
 Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type '(cell #4)'.
 I choose a roughly balanced data set contains 5966 cars image and 5766 non-car images.
 Here is an example of one of each of the vehicle and non-vehicle classes:
@@ -67,18 +68,24 @@ Here is an example of one of each of the vehicle and non-vehicle classes:
 
 ### 1. Define Features
 
-The next step is to define features for the vehicle classification.Three types of features are used: color space feature, color histogram features, and HOG features.
+The next step is to define features for the vehicle classification.Three types of features are used: 
+
+* Color space feature, 
+* Color histogram features 
+* HOG features.
 
 **Convert Image Datatype**
 
-The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 (cell # 5)
+The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 (cell # 6)
 
 **Color Space Feature**
+
 Color space feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
 
 To reduce the number of features, only the saturation channel in the HLS color space is used, based on the assumption that the saturation channel would be a good representation of the image, because the cars are more likely to have a more prominent appearance.
 
 Here is an example of an image in S_channel and the value of color space features.
+
 ![alt text][image2]
 
 
