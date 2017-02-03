@@ -5,13 +5,18 @@
 ## Goals and steps
 The goals / steps of this project are the following:
 
-* Training a classifier to detect vehicle images using color space feature, color histogram features, and HOG features.
+* 1.Define Features: define features for the vehicle classification including color space feature, color histogram features, and HOG features.
 
-* Implement a sliding-window technique and use the trained classifier to search for vehicles in images.
+* 2. Define Classifier: train and fine tune a random forests classifer for vehicle detection
 
-* Run the pipeline on a video stream and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
+* 3. Vehicle Detaction: implement a sliding-window technique and use the classifier to determine whether the image contans vehicles
 
-* Estimate a bounding box for vehicles detected.
+* 4. Duplicates Removal: create a heatmap to removal dupicates (multiple detection of the same car) and outliers.
+
+* 5. Vehicle Tracking: tracking and estimate a bounding box for vehicles detected.
+
+* 6. Video Pipline: run the pipeline on a video stream and detect vehicles frame by frame
+
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
 
@@ -38,7 +43,7 @@ using the cell#.
 
 ### 0. Load Data 
 
-**Load Image Directory**
+**0.1 Load Image Directory**
 
 (The code is is contained in 'cell #2')
 
@@ -59,7 +64,7 @@ Test set:
 * cars: KITTI_extracted 
 * non-cars: GTI
 
-**Data summary**
+**0.2 Data summary**
 
 (The code is is contained in 'cell #4')
 
@@ -78,13 +83,13 @@ The next step is to define features for the vehicle classification.Three types o
 * Color histogram features 
 * HOG features.
 
-**Convert Image Datatype**
+**1.1 Convert Image Datatype**
 
 (The code is is contained in 'cell #6')
 
 The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255.
 
-**Spatial Feature**
+**1.2 Spatial Feature**
 
 (The code is is contained in 'cell #7')
 
@@ -96,7 +101,7 @@ Here is an example of an image in Satuation Channel and the value of the Spatial
 
 ![alt text][image2]
 
-**Color Histogram Features**
+**1.3 Color Histogram Features**
 
 (The code is is contained in 'cell #9')
 
@@ -106,7 +111,7 @@ Here is an example of the color histogram feature in GRB and HLS color space.
 
 ![alt text][image3]
 
-**Histogram of Oriented Gradients (HOG)**
+**1.4 Histogram of Oriented Gradients (HOG)**
 
 (The code is is contained in 'cell #11')
 
@@ -116,7 +121,50 @@ Here is an example of the HOG feature.
 
 ![alt text][image4]
 
-**Extract Features from the Training Images**
+**1.5 Extract Features from the Training Images**
+
+(The code is is contained in 'cell #13')
+
+Create a pipline to extract feature form the dataset.
+
+choosing the parmameters of feature extraction need to balncee performance and running time. 
+After trial and error, I found the performance doesn't increase much after 1000 features. 
+To keep algorithm run in real times, I keep the number of feature around 1000. The feature extraction parameters are:
+
+Sptial feature parameters:
+
+* spatial = 8 
+* channels:  HLS and RGB
+* Number of feautures: 384
+
+Color histogram feature parameters:
+
+* hist_bins = 12 
+* channels: HLS and RGB
+* Number of feautures: 72
+
+HOG feature parameters:
+
+* orient = 8
+* pix_per_cell = 12
+* cell_per_block = 2
+* channels: Grey scale
+* Number of feautures: 512
+
+Total number of feature: 968
+
+#### 1.7 Feature Normalization
+
+(The code is is contained in 'cell #16')
+
+The 'standardscaler' scaler is used, which removing the mean and scaling to unit variance. A scaler is training using the training set data and applied to the training and testing set.
+
+Here is an example of the raw and normalized feature.
+
+![alt text][image5]
+
+**1.8 Make Training, Testing, and Validation set
+
 
 ### 2. Define Classifier
 
@@ -126,7 +174,7 @@ The algorithm uses the ensemble of decision trees to give a more robust performa
 Classification output probability. A threshold will be set up later to reduce the false positive.
 
 
-** Training of the classifer**
+**Training of the classifer**
 The code for this step is contained in cell # in  the notebook.
 
 The steps of training the classifier are as follows:
