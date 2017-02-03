@@ -25,14 +25,16 @@ The code is contained in the IPython notebook `Object_Detection.ipynb`. I will r
 using the cell#.
 
 [//]: # (Image References)
-[image1]: ./readme_img/car_noncar_img.png
-[image2]: ./readme_img/spacial_features.png
-[image3]: ./readme_img/color_histogram.png
-[image4]: ./readme_img/hog_features.png
-[image5]: ./readme_img/feature_normalize.png
+[image1]: ./readme_img/car_noncar.png
+[image2]: ./readme_img/spatial.png
+[image3]: ./readme_img/color_hist.png
+[image4]: ./readme_img/hog.png
+[image5]: ./readme_img/normalize.png
 [image6]: ./readme_img/windows.png
-[image7]: ./readme_img/preprocess.png
-[video1]: ./project_video.mp4
+[image7]: ./readme_img/detect.png
+[image8]: ./readme_img/heatmap.png
+[image9]: ./readme_img/bbox.png
+
 
 ### 0. Load Data 
 
@@ -58,11 +60,11 @@ Here is an example of one of each of the vehicle and non-vehicle classes:
 
 The next step is to define features for the vehicle classification.Three types of features are used: color space feature, color histogram features, and HOG features.
 
-** Convert Image Datatype **
+**Convert Image Datatype**
 
 The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 (cell # 5)
 
-** Color Space Feature **
+**Color Space Feature**
 Color space feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
 
 To reduce the number of features, only the saturation channel in the HLS color space is used, based on the assumption that the saturation channel would be a good representation of the image, because the cars are more likely to have a more prominent appearance.
@@ -74,23 +76,25 @@ Here is an example of an image in S_channel and the value of color space feature
 
 (cell #6-7)
 
-** Color Histogram Features **
+**Color Histogram Features**
 The code for this step is contained in cell # in  the notebook.
 
 Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image.
 Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
 
+![alt text][image3]
 
 ** Histogram of Oriented Gradients (HOG) **
 Gradient features is also used to capture the signature for a shape. However use the gradient feature directly is sensitive.  Histogram of gradient orientation allows variation  between the shape. The HOG is on the grey scale image. 
 
 The code for this step is contained in cell # in  the notebook.
 
+![alt text][image4]
 
-### 2. Classification algorithm
+### 2. Define Classifier
 The code for this step is contained in cell # in  the notebook.
 
-
+**Tuning Classifier Parameters**
 Random forest algorithm was chosen because it has a good balance of performance and speed.
 The algorithm uses the ensemble of decision trees to give a more robust performance.
 Classification output probability. A threshold will be set up later to reduce the false positive.
