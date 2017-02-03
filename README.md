@@ -39,7 +39,9 @@ using the cell#.
 ### 0. Load Data 
 
 **Load Image Directory**
+
 (The code is is contained in 'cell #2')
+
 Reading in all the directory of car and non-car images. 
 The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
 So I choose my train and testing data from different folder
@@ -58,7 +60,9 @@ Test set:
 * non-cars: GTI
 
 **Data summary**
+
 (The code is is contained in 'cell #4')
+
 Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type.
 I choose a roughly balanced data set contains 5966 cars image and 5766 non-car images.
 Here is an example of one of each of the vehicle and non-vehicle classes:
@@ -76,9 +80,13 @@ The next step is to define features for the vehicle classification.Three types o
 
 **Convert Image Datatype**
 
-The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 ('cell #6')
+(The code is is contained in 'cell #6')
+
+The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255.
 
 **Spatial Feature**
+
+(The code is is contained in 'cell #7')
 
 Spatial feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
 
@@ -89,22 +97,28 @@ Here is an example of an image in Satuation Channel and the value of the Spatial
 ![alt text][image2]
 
 **Color Histogram Features**
-The code for this step is contained in cell # in  the notebook.
 
-Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image.
-Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
+(The code is is contained in 'cell #9')
+
+Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image. Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
+
+Here is an example of the color histogram feature in GRB and HLS color space.
 
 ![alt text][image3]
 
 **Histogram of Oriented Gradients (HOG)**
+
+(The code is is contained in 'cell #11')
+
 Gradient features is also used to capture the signature for a shape. However use the gradient feature directly is sensitive.  Histogram of gradient orientation allows variation  between the shape. The HOG is on the grey scale image. 
 
-The code for this step is contained in cell # in  the notebook.
+Here is an example of the HOG feature.
 
 ![alt text][image4]
 
+**Extract Features from the Training Images**
+
 ### 2. Define Classifier
-The code for this step is contained in cell # in  the notebook.
 
 **Tuning Classifier Parameters**
 Random forest algorithm was chosen because it has a good balance of performance and speed.
