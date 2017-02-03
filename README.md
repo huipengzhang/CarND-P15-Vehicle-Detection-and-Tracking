@@ -39,6 +39,7 @@ using the cell#.
 ### 0. Load Data 
 
 **Load Image Directory**
+
 Reading in all the directory of car and non-car images. ('cell #2' )
 The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
 So I choose my train and testing data from different folder
@@ -46,19 +47,15 @@ The training data from folder:
 The testing and validation data later splitted. 
 
 
-* Training set
+Training set
 
-cars: GTI_far, GTI_left, GTI_right, GTI_MiddleClose 
+* cars: GTI_far, GTI_left, GTI_right, GTI_MiddleClose 
+* non-cars: Extra
 
-non-cars: Extra
+Test set: 
 
-* Test set: cars: 
-
-KITTI_extracted 
-
-non-cars: GTI
-
-The testing and validation data later splitted. 
+* cars: KITTI_extracted 
+* non-cars: GTI
 
 **Data summary**
 Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type '(cell #4)'.
