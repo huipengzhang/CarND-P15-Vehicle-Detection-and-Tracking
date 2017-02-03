@@ -304,6 +304,11 @@ Moving average algorithm is used to update the value. The advantage in average o
 
 \$\$ y_{n+1} =\alpha y_{n} + (1-\alpha) x_{n+1} \$\$
 
+
+
+ \$\$ x^{2} + y^{2} = z^{2} \$\$
+
+
  ### 6. Video pipeline
 The pipeline works as follows, process the video frame by frame, sliding window to search for car image, create heat map for group overlapping windows, track the detected blog. 
 
