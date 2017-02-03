@@ -351,6 +351,8 @@ In the first step, I change the classifier to produce a probability instead of a
 
 So I try the second approach.
 
+_E = mc ^2^_
+
 
 ### Fail
 From the final video results, in the shadows area. False positive. The robustness of the classifier can still be increase. More specifically, it can be better distinguish, shadow and cars. 
