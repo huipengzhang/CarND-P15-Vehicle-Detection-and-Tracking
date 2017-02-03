@@ -306,7 +306,7 @@ Moving average algorithm is used to update the value. The advantage in average o
 
 
 
- \$\$ x^{2} + y^{2} = z^{2} \$\$
+$$\ x^{2} + y^{2} = z^{2} $$
 
 
  ### 6. Video pipeline
