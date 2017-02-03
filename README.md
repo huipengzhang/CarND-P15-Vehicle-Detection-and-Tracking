@@ -123,7 +123,7 @@ Here is an example of the HOG feature.
 
 #### 1.5 Extract Features from the Training Images
 
-(The code is is contained in 'cell #13')
+(The code is is contained in `cell #13`)
 
 Create a pipline to extract feature form the dataset.
 
@@ -206,27 +206,38 @@ Validation accuracy = 0.8156
 
 ### 3. vehiche Detection
 
-#### 3.2 Sliding window search
+#### 3.1 Sliding window search
 Sliding windows are used to crop small images for vehicle classification.
 To Minimize the number of searches, the search area is retrained to area vehicle will appear.
 First,  the minimum and maximum size of the window are decided, the intermediate sizes are chosen by interpolation.
 The results on different window size are:
 
-3.3 Preprocess images
+Here is an example of search windows with different size
 
+![alt text][image6]
+
+#### 3.2 Extract Features form Windows
+First
 The pixels in each window are cropped and rescaled to 64x64x3 pixel, which is the same as the training image. 
 
 Then, the classifier determine with the window is a car image or not.
 
-Test results on the test images are:
 
-3.4 Extract Features From a Testing Image
+Here is an example shows window of the the detected vhecle for all the test images
 
-Here is an example of the raw and normalized feature.
+![alt text][image7]
 
-![alt text][image5]
 
-### 5. Duplicates Detection.
+False positive around theb fence. 
+
+dark color vhicle. better for more vibrate color
+
+Splite the limitation, it find car, use duplicates detection and tracking to filter out the outplier
+
+
+### 4. Duplicates Detection.
+
+#### 4.1 Create a Heatmap
 
 Duplicates are multiple detections finding the same car image. To eliminate the duplicate 
 a heat-map is build from combining overlapping detections.
@@ -242,12 +253,19 @@ reduce it the value, it cool down if not detected.
 
 overlay a heat map on the value detection.
 
+Here is an example shows window of show the heatmap box and labels
+
+![alt text][image8]
+
+#### 4.2 Estimate Bounding Box
 
 Set a threshold to filter out as noise. And get disconnected areas. Use label to label the area.as diferent vehicle and draw a bounding box around the area.
 
+Here is an example shows window of the bounding box
 
+![alt text][image9]
  
-### 4. tracking.
+### 5. tracking.
 Tracking in a video, tracking pipeline.
 
 I using moving average algorithm with is decrease as 
@@ -282,13 +300,22 @@ Moving average algorithm is used to update the value. The advantage in average o
 
  In practice, you will want to integrate a heat map over several frames of video, such that areas of multiple detections get "hot", while transient false positives stay "cool". You can then simply threshold your heatmap to remove false positives.
 
+### 5. tracking.
 
- ### 4. Video pipeline
+y_{n+1} =\alpha y_{n} + (1-\alpha) x_{n+1}
+
+
+ ### 6. Video pipeline
 The pipeline works as follows, process the video frame by frame, sliding window to search for car image, create heat map for group overlapping windows, track the detected blog. 
-The detected windows are shown in blue boxes
-The heatmat over lapped.
-The bounding bound in red
-Here's a link to my video result
+
+Create a pipline to detect cars in a video stream Visualization:
+
+* Detected windows: Blue boxes
+* Heatmap: Green area
+* Bounding boxes of cars: Red boxes
+
+
+Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
 
 ---
 ## Discussion
