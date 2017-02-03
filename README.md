@@ -39,8 +39,8 @@ using the cell#.
 ### 0. Load Data 
 
 **Load Image Directory**
-
-Reading in all the directory of car and non-car images. ('cell #2')
+(The code is is contained in 'cell #2')
+Reading in all the directory of car and non-car images. 
 The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
 So I choose my train and testing data from different folder
 The training data from folder:
@@ -58,8 +58,8 @@ Test set:
 * non-cars: GTI
 
 **Data summary**
-
-Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type '(cell #4)'.
+(The code is is contained in 'cell #4')
+Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type.
 I choose a roughly balanced data set contains 5966 cars image and 5766 non-car images.
 Here is an example of one of each of the vehicle and non-vehicle classes:
 
@@ -76,21 +76,17 @@ The next step is to define features for the vehicle classification.Three types o
 
 **Convert Image Datatype**
 
-The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 (cell # 6)
+The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255 ('cell #6')
 
-**Color Space Feature**
+**Spatial Feature**
 
-Color space feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
+Spatial feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
 
 To reduce the number of features, only the saturation channel in the HLS color space is used, based on the assumption that the saturation channel would be a good representation of the image, because the cars are more likely to have a more prominent appearance.
 
-Here is an example of an image in S_channel and the value of color space features.
+Here is an example of an image in Satuation Channel and the value of the Spatial features.
 
 ![alt text][image2]
-
-
-
-(cell #6-7)
 
 **Color Histogram Features**
 The code for this step is contained in cell # in  the notebook.
@@ -100,7 +96,7 @@ Binning is performed to the histogram of each channel. Both the RGB and HLS chan
 
 ![alt text][image3]
 
-** Histogram of Oriented Gradients (HOG) **
+**Histogram of Oriented Gradients (HOG)**
 Gradient features is also used to capture the signature for a shape. However use the gradient feature directly is sensitive.  Histogram of gradient orientation allows variation  between the shape. The HOG is on the grey scale image. 
 
 The code for this step is contained in cell # in  the notebook.
@@ -138,7 +134,7 @@ The tuning parameters including  max_features, max_depth,  min_samples_leaf.
 The parameters are searched similar to grid search. I found the best parameters are max_feature = 3, max_depth = 5, min_sampe_leaf = 5.  Smaller tree depth and max features have a better result, at they turn to use more general rules.
 
 
-### 3. vehiche detection
+### 3. vehiche Detection
 
 ** Sliding window search **
 Sliding windows are used to crop small images for vehicle classification.
