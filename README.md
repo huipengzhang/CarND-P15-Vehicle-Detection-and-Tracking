@@ -306,7 +306,7 @@ Moving average algorithm is used to update the value. The advantage in average o
 
 
 
-$$\ x^{2} + y^{2} = z^{2} $$
+$ x^{2} + y^{2} = z^{2} $
 
 
  ### 6. Video pipeline
@@ -317,6 +317,9 @@ Create a pipline to detect cars in a video stream Visualization:
 * Detected windows: Blue boxes
 * Heatmap: Green area
 * Bounding boxes of cars: Red boxes
+
+
+$ x^{2} + y^{2} = z^{2} $
 
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
