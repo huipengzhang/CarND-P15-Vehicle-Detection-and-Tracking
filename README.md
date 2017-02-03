@@ -319,7 +319,15 @@ Create a pipline to detect cars in a video stream Visualization:
 * Bounding boxes of cars: Red boxes
 
 
-$ x^{2} + y^{2} = z^{2} $
+$$
+M = \left( \begin{array}{ccc}
+x_{11} & x_{12} & \ldots \\
+x_{21} & x_{22} & \ldots \\
+\vdots & \vdots & \ldots \\
+\end{array} \right)
+$$
+
+$$ x^{2} + y^{2} = z^{2} $$
 
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
