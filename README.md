@@ -45,7 +45,7 @@ using the cell#.
 
 **0.1 Load Image Directory**
 
-(The code is is contained in 'cell #2')
+(The code is is contained in `cell #2`)
 
 Reading in all the directory of car and non-car images. 
 The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
@@ -64,9 +64,9 @@ Test set:
 * cars: KITTI_extracted 
 * non-cars: GTI
 
-**0.2 Data summary**
+#### 0.2 Data summary
 
-(The code is is contained in 'cell #4')
+(The code is is contained in `cell #4`)
 
 Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type.
 I choose a roughly balanced data set contains 5966 cars image and 5766 non-car images.
@@ -83,15 +83,15 @@ The next step is to define features for the vehicle classification.Three types o
 * Color histogram features 
 * HOG features.
 
-**1.1 Convert Image Datatype**
+#### 1.1 Convert Image Datatype
 
-(The code is is contained in 'cell #6')
+(The code is is contained in `cell #6`)
 
 The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255.
 
-**1.2 Spatial Feature**
+#### 1.2 Spatial Feature
 
-(The code is is contained in 'cell #7')
+(The code is is contained in `cell #7`)
 
 Spatial feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
 
@@ -101,9 +101,9 @@ Here is an example of an image in Satuation Channel and the value of the Spatial
 
 ![alt text][image2]
 
-**1.3 Color Histogram Features**
+#### 1.3 Color Histogram Features
 
-(The code is is contained in 'cell #9')
+(The code is is contained in `cell #9`)
 
 Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image. Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
 
@@ -111,9 +111,9 @@ Here is an example of the color histogram feature in GRB and HLS color space.
 
 ![alt text][image3]
 
-**1.4 Histogram of Oriented Gradients (HOG)**
+#### 1.4 Histogram of Oriented Gradients (HOG)
 
-(The code is is contained in 'cell #11')
+(The code is is contained in `cell #11`)
 
 Gradient features is also used to capture the signature for a shape. However use the gradient feature directly is sensitive.  Histogram of gradient orientation allows variation  between the shape. The HOG is on the grey scale image. 
 
@@ -121,7 +121,7 @@ Here is an example of the HOG feature.
 
 ![alt text][image4]
 
-**1.5 Extract Features from the Training Images**
+#### 1.5 Extract Features from the Training Images
 
 (The code is is contained in 'cell #13')
 
@@ -155,7 +155,7 @@ Total number of feature: 968
 
 #### 1.7 Feature Normalization
 
-(The code is is contained in 'cell #16')
+(The code is is contained in `cell #16`)
 
 The 'standardscaler' scaler is used, which removing the mean and scaling to unit variance. A scaler is training using the training set data and applied to the training and testing set.
 
@@ -163,46 +163,56 @@ Here is an example of the raw and normalized feature.
 
 ![alt text][image5]
 
-**1.8 Make Training, Testing, and Validation set
+#### 1.8 Make Training, Testing, and Validation set
 
+The image in the training set is randomly shuffled. The image in the testing set is divided e
+
+The total number of features: 
+Training set  :  11732 
+Validation set:  3363
+Testing set   :  3363
 
 ### 2. Define Classifier
 
-**Tuning Classifier Parameters**
+#### 2.1 Tuning Classifier Parameters
+
 Random forest algorithm was chosen because it has a good balance of performance and speed.
 The algorithm uses the ensemble of decision trees to give a more robust performance.
 Classification output probability. A threshold will be set up later to reduce the false positive.
-
-
-**Training of the classifer**
-The code for this step is contained in cell # in  the notebook.
-
-The steps of training the classifier are as follows:
-Load cars and non-car images through the directory list. 
-
-Standardize features by removing the mean and scaling to unit variance
-
-
-Use standard scaler is used to normalize the features so that they have similar numerical values.
-
-Shuffled the training data set.
-
-Divide the testing data set into 50% test set and 50% validation set. 
 
 Instead of accuracy, the auroc is used as the performance metric to measure the robustness of the algorithm.
 
 The tuning parameters including  max_features, max_depth,  min_samples_leaf.
 
-The parameters are searched similar to grid search. I found the best parameters are max_feature = 3, max_depth = 5, min_sampe_leaf = 5.  Smaller tree depth and max features have a better result, at they turn to use more general rules.
+#### 2.2 Evaluate the Classifier
+The code for this step is contained in cell # in  the notebook.
+
+Smaller tree depth and max features have a better result, at they turn to use more general rules.
+
+
+n_estimators=100
+max_features = 2
+min_samples_leaf = 4
+max_depth = 25
+
+Training time: about 3 Seconds
+Training auroc    = 1.0
+Training accuracy = 0.9998
+Testing auroc    = 0.9714
+Testing accuracy = 0.818
+Validation auroc    = 0.9686
+Validation accuracy = 0.8156
 
 
 ### 3. vehiche Detection
 
-** Sliding window search **
+#### 3.2 Sliding window search
 Sliding windows are used to crop small images for vehicle classification.
 To Minimize the number of searches, the search area is retrained to area vehicle will appear.
 First,  the minimum and maximum size of the window are decided, the intermediate sizes are chosen by interpolation.
 The results on different window size are:
+
+3.3 Preprocess images
 
 The pixels in each window are cropped and rescaled to 64x64x3 pixel, which is the same as the training image. 
 
@@ -210,7 +220,13 @@ Then, the classifier determine with the window is a car image or not.
 
 Test results on the test images are:
 
-5. Duplicates Detection.
+3.4 Extract Features From a Testing Image
+
+Here is an example of the raw and normalized feature.
+
+![alt text][image5]
+
+### 5. Duplicates Detection.
 
 Duplicates are multiple detections finding the same car image. To eliminate the duplicate 
 a heat-map is build from combining overlapping detections.
