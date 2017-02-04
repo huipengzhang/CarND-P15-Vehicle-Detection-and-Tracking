@@ -393,51 +393,20 @@ Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
 ---
 ## Discussion
 
-### 1. Problems faced in your implementation of this project
+### 1. Problems faced in the project
 
-The first issue I faced is that I had good training results on the vehicle and non-vehicle training dataset, but poor result on test images from the video stream.
+The first issue I faced is that I got good training results on the training dataset, but the poor result on test images from the video stream.
 
-I originally use the "train_test_split" function on the images from the same folder and get very high test accuracy (99%) without any tuning of the parameter. It indicates overfitting.
+I originally use the `train_test_split` function on the images from the same folder and get very high test accuracy (99%) without any tuning of the parameter. It indicates overfitting. The problem is that the images from the same folder are very similar because they are often cropped from the same video stream. So  I used the images from different folders for the validation and test set. And I found my the linear SVM classifier can only achieve an accuracy of 58%. So, I decided to switch to a more sophisticated classifier with good running time. And I choose random forests.  It gets an initial accuracy of  70% and after tuning the accuracy increase to 84 % on the test set. After the parameter tuning the classifier, the classification improvement a lot, but it still has some miss classifies. 
 
-The problem is that the images from the same folder are very similar because they often are cropped from the same video stream.
+The second problem is to reduce the false positives, which mean classifier identify cars which are not there. First, I try to increase the robustness of the classifier by change the threshold  probability. However, I found the classifier have very narrow margin.e.g. Just increase from 50% to 55%, it will miss some true positive. So, I try the second approach by filtering and tracking.  I use moving average method to update a heatmap, a set threshold to filter out results that are not very certain. This method eliminates a lot of false positives because the positives are not persistent, they appear and quickly disappear.
 
-So  I used the images from a different folder for the validation and test set. And I found my the linear SVM classifier can only achieve an accuracy of 58%.
+### 2.Possible failure and improvement
 
-And therefore, I decided to switch to a more sophisticated classifier with good running time. And I choose random forests.  It gets an initial accuracy of  70% and after tuning the accuracy increase to 84 % on the test set.
+From the final video results, the classifiers still get many False Positives, especially around the fences on the left side. It possible the fences have vertical lines which can be confusing to car images. By setting a threshold on heatmap, I was able to reduce many of the False Positive. However, sometimes the missing the at some frame. The moving average method used to update the position of the bounding box also introduce some delay, as we can see the bounding box is "lagged" behind the vehicle.
 
-To measure the robustness of the algorithm. I changed the performance metric to “auroc”. And tune the parameters such as: max_features, max_depth,  min_samples_leaf .
-
-The best set of parameters I found are: max_feature = 3, max_depth = 5, min_sampe_leaf = 5.  
-The classifier have better performance using “shallow” trees with less maximum features which generate more general result.
-
-After the parameter tuning the classifier, the classification improvement a lot, but it still have some miss classifies.
-
-@The second problem is to reduce the false positives, which mean classifier identify cars which is not there. I took a combination of 1. increasing the robustness of the classifier. 2.  Filter the mistake by tracking. 
-In the first step, I change the classifier to produce a probability instead of a binary classifier. Then I can increase the threshold, for example 50% sure, need to be 60% sure. However, I found the classifier have very narrow margin.e.g. Just increase from 50% to 55%, it will miss some true positive.
-
-So I try the second approach.
-
-
-### 2.Likely failure and possible improvement
-
-From the final video results, the classifiers still produce many False Positives, especially around theb fences on the left side. 
-It possilble the fences have vertical lines which can be confusing to a cars image.
-
-The classifer achieve 84% of the accuracy.
-
-Although the seting threshodl on heatmap can reduce, number of false positives
-
-Deeplearning can improve in the accruacy.
+One way to the classification result is to use Deep-learning, the current random forests classifier can achieve an accuracy of 84%. It performs worse on fence and shadow. By using Deep-learning, we can expect a much higher accuracy.Also, the threshold and moving average parameter can also be better tuned to filter more the False Positives without missing many True Positives or introduce to much delay.
 
 
 
-One possible false can be caused by 
-False positive around theb fence. 
-
-dark color vhicle. better for more vibrate color
-The classifer 
-From the final video results, in the shadows area. False positive. The robustness of the classifier can still be increase. More specifically, it can be better distinguish, shadow and cars. 
-The track of two vehicle move very close. The algorithm will just group them as one big vehicle. Instead of two.
-
-Moving average algorithm introduce delay, the box lag belind
 
