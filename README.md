@@ -39,6 +39,7 @@ using the cell#.
 [image7]: ./readme_img/detect.png
 [image8]: ./readme_img/heatmap.png
 [image9]: ./readme_img/bbox.png
+[image10]: ./readme_img/eqn.png
 
 
 ### 0. Load Data 
@@ -265,14 +266,41 @@ Here is an example shows window of the bounding box
 
 ![alt text][image9]
  
-### 5. tracking.
+### 5. Vehicle Tracking
+
 Tracking in a video, tracking pipeline.
 
 I using moving average algorithm with is decrease as 
 The old value decrease exponcially, 
 
 I created a car () object to car
-The car boject contrains 3 attribute, 
+The car boject contrains 4 attribute, average_centroid
+           width = 0 
+           .height = 0
+       
+      detected = 0.5  is a float value define to measurement how certain the car is detected. i use the moving average to update the value if a car is detected in a frame, value will increase.
+      
+      after each from the value is deprecate, decrease expensally
+      
+    code 
+    
+the the tracking process is discribe as follow:
+create two global valuables :
+heatmap, Detected_Cars
+
+each frame create a heat map heatmap_new for the window of detected value
+
+the goble valabuble heatmap is updated using moving average. 
+
+heatmap_sure thredhold the heatmap filter out sure is indeed a car, and create bounding_boxes 
+
+ find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
+
+```
+        car_found, k = track_car(centroids[n],Detected_Cars) 
+```
+
+
 
 Heatmap, 
 Update the heat map using moving average algorithm 
@@ -300,13 +328,11 @@ Moving average algorithm is used to update the value. The advantage in average o
 
  In practice, you will want to integrate a heat map over several frames of video, such that areas of multiple detections get "hot", while transient false positives stay "cool". You can then simply threshold your heatmap to remove false positives.
 
-### 5. tracking.
-
-\$\$ y_{n+1} =\alpha y_{n} + (1-\alpha) x_{n+1} \$\$
 
 
+![alt text][image10]
 
-$ x^{2} + y^{2} = z^{2} $
+
 
 
  ### 6. Video pipeline
@@ -318,16 +344,11 @@ Create a pipline to detect cars in a video stream Visualization:
 * Heatmap: Green area
 * Bounding boxes of cars: Red boxes
 
+The produce many False Positives, , especially around theb fences on the left side. 
+It possilble the fences have vertical lines which can be confusing to a cars image.
 
-$$
-M = \left( \begin{array}{ccc}
-x_{11} & x_{12} & \ldots \\
-x_{21} & x_{22} & \ldots \\
-\vdots & \vdots & \ldots \\
-\end{array} \right)
-$$
-
-$$ x^{2} + y^{2} = z^{2} $$
+The white vechile, and dark vehicle can be detected. 
+The threshoding the heat map reduce, the among, hover, it also take a second to confornt it is a car. of lose track.
 
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
@@ -335,7 +356,7 @@ Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
 ---
 ## Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project. Where will your pipeline likely fail? What could you do to make it more robust?
+### 1. Problems faced in your implementation of this project
 
 The first issue I faced is that I had good training results on the vehicle and non-vehicle training dataset, but poor result on test images from the video stream.
 
@@ -359,10 +380,25 @@ In the first step, I change the classifier to produce a probability instead of a
 
 So I try the second approach.
 
-_E = mc ^2^_
+
+### 2.Likely failure and possible improvement
+
+From the final video results, the classifiers still produce many False Positives, especially around theb fences on the left side. 
+It possilble the fences have vertical lines which can be confusing to a cars image.
+
+The classifer achieve 84% of the accuracy.
+
+Although the seting threshodl on heatmap can reduce, number of false positives
+
+Deeplearning can improve in the accruacy.
 
 
-### Fail
+
+One possible false can be caused by 
+False positive around theb fence. 
+
+dark color vhicle. better for more vibrate color
+The classifer 
 From the final video results, in the shadows area. False positive. The robustness of the classifier can still be increase. More specifically, it can be better distinguish, shadow and cars. 
 The track of two vehicle move very close. The algorithm will just group them as one big vehicle. Instead of two.
 
