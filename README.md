@@ -122,13 +122,13 @@ This step creates a pipeline to extract features from the dataset. The feature e
 
 * spatial = 8 
 * channels:  HLS and RGB
-* Number of feautures: 384
+* number of feautures: 384
 
 **Color histogram feature parameters:**
 
 * hist_bins = 12 
 * channels: HLS and RGB
-* Number of feautures: 72
+* number of feautures: 72
 
 **HOG feature parameters:**
 
@@ -136,7 +136,7 @@ This step creates a pipeline to extract features from the dataset. The feature e
 * pix_per_cell = 12
 * cell_per_block = 2
 * channels: Grey scale
-* Number of feautures: 512
+* number of feautures: 512
 
 **Total number of feature:** 968
 
@@ -162,23 +162,20 @@ Testing set   :  3363
 
 #### 2.1 Tuning Classifier Parameters
 
-Random forest algorithm was chosen because it has a good balance of performance and speed.
-The algorithm uses the ensemble of decision trees to give a more robust performance.
-Classification output probability. A threshold will be set up later to reduce the false positive.
+Random forest algorithm was chosen because it has a good balance of performance and speed. The algorithm uses the ensemble of decision trees to give a more robust performance. Classification output probability and a threshold will be set up later to reduce the false positive. 
 
-Instead of `accuracy`, the `auroc` is used as the performance metric to measure the robustness of the algorithm.
+The tuning parameters including  max_features, max_depth,  min_samples_leaf. `auroc`is used as the performance metric to measure the robustness of the algorithm. 
 
-The tuning parameters including  max_features, max_depth,  min_samples_leaf.
-
-#### 2.2 Evaluate the Classifier
-The code for this step is contained in cell # in  the notebook.
-
-Smaller tree depth and max features have a better result, at they turn to use more general rules.
+A grid search is conducted to optimize the parameters. smaller max_features have better performance because the classifier tends to find more general rules. The final set of parameters are as follows
 
 n_estimators = 100
 max_features = 2
 min_samples_leaf = 4
 max_depth = 25
+
+#### 2.2 Evaluate the Classifier
+
+The performance of the classifier on training testing, and validation set is shown as follows:
 
 Training time: about 3 Seconds
 Training auroc    = 1.0
@@ -191,158 +188,55 @@ Validation accuracy = 0.8156
 
 ### 3. vehiche Detection
 
-#### 3.1 Sliding window search
-Sliding windows are used to crop small images for vehicle classification.
-To Minimize the number of searches, the search area is retrained to area vehicle will appear.
-First,  the minimum and maximum size of the window are decided, the intermediate sizes are chosen by interpolation.
-The results on different window size are:
+Using the classifier on sliding windows to detect whether an image contain cars.
 
-Here is an example of search windows with different size
+#### 3.1 Sliding window search
+
+Sliding windows are used to crop small images for vehicle classification.To minimize the number of searches, the search area is retained to the area where vehicles are likely to appear.First,  the minimum and maximum size of the window are decided. Then, the intermediate sizes are chosen by interpolation. Here is an example of search windows with different size.
+
 
 ![alt text][image6]
 
+
 #### 3.2 Extract Features form Windows
-First
-The pixels in each window are cropped and rescaled to 64x64x3 pixel, which is the same as the training image. 
 
-Then, the classifier determine with the window is a car image or not.
-
-
-Here is an example shows window of the the detected vhecle for all the test images
+First, the pixels in each window are cropped and rescaled to 64x64x3, which is the same as the training image. Then, the classifier determine with the window is a car image or not. Here is an example shows window of the detected vehicle for all the test images:
 
 ![alt text][image7]
 
-
-False positive around theb fence. 
-
-dark color vhicle. better for more vibrate color
-
-Splite the limitation, it find car, use duplicates detection and tracking to filter out the outplier
+The classifier gets many False Positives on fences on the left side. It's possible the fences have vertical lines which can be confusing to car images. I also miss the car with darker. Proablby because the color of the car is not very prominent. But, overall the classifier does a good job in finding cars images
 
 
-### 4. Duplicates Detection.
+
+### 4. Duplicates Removal
+
+Create a heatmap and apply threshold to removal duplicates (multiple detections of the same car)
 
 #### 4.1 Create a Heatmap
 
-Duplicates are multiple detections finding the same car image. To eliminate the duplicate 
-a heat-map is build from combining overlapping detections.
-
-False positives are not consistent. It will appear and disappear. 
-
-To filter out false positives as nose. 
-I  build 
-
-The individual heat-maps for the above images look like this:
-
-reduce it the value, it cool down if not detected. 
-
-overlay a heat map on the value detection.
-
-Here is an example shows window of show the heatmap box and labels
+To eliminate the duplicate, first, a heatmap is built from combining the windows which have car detected. Then a threshold is added to filter out the False Positives. Since False Positives are not consistent. It will be more likely to appear and disappear. The tracking of a vehicle is done across many frames, which will be described in section 5. After the heatmap is thresholded. Use 'label' to find all the disconnected areas. Here is an example shows the heatmap box and labeled areas.
 
 ![alt text][image8]
 
 #### 4.2 Estimate Bounding Box
 
-Set a threshold to filter out as noise. And get disconnected areas. Use label to label the area.as diferent vehicle and draw a bounding box around the area.
-
-Here is an example shows window of the bounding box
+A bounding box is estimated by drawing a rectangular around the labeled area. Here is an example shows window of the bounding box:
 
 ![alt text][image9]
  
  
 ### 5. Vehicle Tracking
 
-Tracking in a video, tracking pipeline.
+I created a 'car' object to track the detected cars, which contrains 4 attribute, `average_centroid`, `width`, `heigh`, `detected`. 
+The `detected` is a float value to measurement how certain detection is. If the car object is detected in a frame, the value will increases if not the value will decrease. 
 
-I using moving average algorithm with is decrease as 
-The old value decrease exponcially, 
+I created global variable to tracked for tracking: `heatmap` and `Detected_Cars`.  if an area has vheicle detected `heatmap` will heat up, if not the vehicle is detect will 'cool down'. 'Detected_Cars' is a list of previous detacted car object, if `detected` is below a threldshold, it will be removed from the list. 
 
-I created a car () object to car
-The car boject contrains 4 attribute, average_centroid
-           width = 0 
-           .height = 0
-       
-      detected = 0.5  is a float value define to measurement how certain the car is detected. i use the moving average to update the value if a car is detected in a frame, value will increase.
-      
-      after each from the value is deprecate, decrease expensally
-      
-    code 
-    
-the the tracking process is discribe as follow:
-create two global valuables :
-heatmap, Detected_Cars
+The the tracking process is discribe as follow:
 
 each frame create a heat map heatmap_new for the window of detected value
 
 the goble valabuble heatmap is updated using moving average. 
- 
- heatmap = 0.9*heatmap + 0.1*heatmap_new
- 
-heatmap_sure thredhold the heatmap filter out sure is indeed a car, and create bounding_boxes 
-
-find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
-
-```
-        car_found, k = track_car(centroids[n],Detected_Cars) 
-```
-
-if car is fund it update the detected cars centroid and bounding box heigh and width, detected value using moving average
-```
-            # update detected car object
-            # update centroid using moving average
-            Detected_Cars[k].average_centroid = (int(0.9*Detected_Cars[k].average_centroid[0] + 0.1*centroids[n][0]),
-                                    int(0.9*Detected_Cars[k].average_centroid[1] + 0.1*centroids[n][1]))         
-            # update bounding box width using moving average
-            Detected_Cars[k].width =   math.ceil(0.9*Detected_Cars[k].width + 0.1*box_size[n][0]) # round up
-            # update bounding box height using moving average
-            Detected_Cars[k].height =  math.ceil(0.9*Detected_Cars[k].height + 0.1*box_size[n][1])
-            # update detected value
-            Detected_Cars[k].detected = Detected_Cars[k].detected + 0.2
-  ```
-if not neear by car is found it add a new car object
-```
-       new_car = car()
-            # inicalize the car object using the size 
-            # and centroid of the bounding box
-            new_car.average_centroid = centroids[n]
-            new_car.width =  box_size[n][0]
-            new_car.height = box_size[n][1]            
-            New_Cars.append(new_car)
-```
-# combine new_cars to detected cars
-    Detected_Cars2 = list(Detected_Cars) # make a copy
-    Detected_Cars = New_Cars[:] # add new cars
-    if Detected_Cars2: # if is not empty
-        for car in Detected_Cars2:
-            # if the detected value greater than the threshold add to the list
-            # if not discard
-            if car.detected > 0.17: 
-                # add to the detected cars list
-                Detected_Cars.append(car)
-            
-add new car to the list and if previous detacted car is higher thant threshodl it add it too 
-```
-if Detected_Cars2: # if is not empty
-        for car in Detected_Cars2:
-            # if the detected value greater than the threshold add to the list
-            # if not discard
-            if car.detected > 0.17: 
-                # add to the detected cars list
-                Detected_Cars.append(car) 
-   ```
-   
-  last it   depreciate old car values, so if it no longer detacted the value fade away
-  
-  ```
-    for car in Detected_Cars:
-        car.detected = car.detected*0.8 # depreciate old value
-```
-
-Heatmap, 
-Update the heat map using moving average algorithm 
-Threshod up
-
 Position in one frame,  
 Record the position of window
 Use tracking to filter out false positive
@@ -364,13 +258,68 @@ Moving average algorithm is used to update the value. The advantage in average o
 
 
  In practice, you will want to integrate a heat map over several frames of video, such that areas of multiple detections get "hot", while transient false positives stay "cool". You can then simply threshold your heatmap to remove false positives.
+ 
 
-
+```
+ heatmap = 0.9*heatmap + 0.1*heatmap_new
+```
+ 
+I use the moving average to update the value, which is shown as follows
 
 ![alt text][image10]
 
+It is a weighted average of previous average and teh new value.
+The advantage of this method is that it doesn't need to store all the previous value, only keep the value of the previous average
+The old value decrease exponcially and fade out.
+
+ `heatmap_sure` thredhold the heatmap filter out sure is indeed a car, and create bounding_boxes 
 
 
+Then we find find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
+
+```
+        car_found, k = track_car(centroids[n],Detected_Cars) 
+```
+
+if car is fund it update the detected cars centroid and bounding box heigh and width, detected value using moving average
+```
+            Detected_Cars[k].average_centroid = (int(0.9*Detected_Cars[k].average_centroid[0] + 0.1*centroids[n][0]),
+                                    int(0.9*Detected_Cars[k].average_centroid[1] + 0.1*centroids[n][1]))         
+            Detected_Cars[k].width =   math.ceil(0.9*Detected_Cars[k].width + 0.1*box_size[n][0]) # round up
+            Detected_Cars[k].height =  math.ceil(0.9*Detected_Cars[k].height + 0.1*box_size[n][1])
+            Detected_Cars[k].detected = Detected_Cars[k].detected + 0.2
+  ```
+if not neear by car is found it add a new car object
+```
+            new_car = car()  
+            new_car.average_centroid = centroids[n]
+            new_car.width =  box_size[n][0]
+            new_car.height = box_size[n][1]            
+            New_Cars.append(new_car)
+```
+combine new_cars to detected cars and loop through the prviuos detected car.  if the detected value greater than the threshold add to the list if not discard
+```
+    if Detected_Cars2: # if is not empty
+        for car in Detected_Cars2:
+            if car.detected > 0.17: 
+                Detected_Cars.append(car)
+```
+
+add new car to the list and if previous detacted car is higher thant threshodl it add it too 
+
+```
+if Detected_Cars2: # if is not empty
+        for car in Detected_Cars2:
+            if car.detected > 0.17: 
+                Detected_Cars.append(car) 
+   ```
+   
+At last, it depreciate old car values, so if it no longer detacted the value fade away
+  
+  ```
+    for car in Detected_Cars:
+        car.detected = car.detected*0.8 # depreciate old value
+```
 
  ### 6. Video pipeline
  
