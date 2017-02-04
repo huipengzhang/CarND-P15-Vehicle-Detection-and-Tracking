@@ -1,5 +1,3 @@
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-
 # Vehicle Detection Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
@@ -7,17 +5,17 @@
 ## Goals and steps
 The goals / steps of this project are the following:
 
-* 1.Define Features: define features for the vehicle classification including color space feature, color histogram features, and HOG features.
+1. Define Features: define features for the vehicle classification including color space feature, color histogram features, and HOG features.
 
-* 2. Define Classifier: train and fine tune a random forests classifer for vehicle detection
+2. Define Classifier: train and fine tune a random forests classifer for vehicle detection
 
-* 3. Vehicle Detaction: implement a sliding-window technique and use the classifier to determine whether the image contans vehicles
+3. Vehicle Detaction: implement a sliding-window technique and use the classifier to determine whether the image contans vehicles
 
-* 4. Duplicates Removal: create a heatmap to removal dupicates (multiple detection of the same car) and outliers.
+4. Duplicates Removal: create a heatmap to removal dupicates (multiple detection of the same car) and outliers.
 
-* 5. Vehicle Tracking: tracking and estimate a bounding box for vehicles detected.
+5. Vehicle Tracking: tracking and estimate a bounding box for vehicles detected.
 
-* 6. Video Pipline: run the pipeline on a video stream and detect vehicles frame by frame
+6. Video Pipline: run the pipeline on a video stream and detect vehicles frame by frame
 
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
