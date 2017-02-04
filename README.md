@@ -96,9 +96,7 @@ The spatial feature uses the raw pixel values of the images and flattens them in
 
 (The code is contained in `cell #9`)
 
-Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image. Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
-
-Here is an example of the color histogram feature in GRB and HLS color space.
+Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image. Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. Here is an example of the color histogram feature in GRB and HLS color space.
 
 ![alt text][image3]
 
@@ -114,9 +112,7 @@ The Histogram of Gradient Orientation (HOG) is also used to capture the signatur
 
 (The code is contained in `cell #13`)
 
-Create a pipline to extract feature form the dataset.
-
-This step creates a pipeline to extract features from the dataset. The feature extraction parameters need to balance the performance and running time. After trial and error, I found the performance doesn't increase much after 1000 features. To keep algorithm run in real times, I keep the number of features around 1000. The feature extraction parameters are as follows:
+Create a pipline to extract feature form the dataset. This step creates a pipeline to extract features from the dataset. The feature extraction parameters need to balance the performance and running time. After trial and error, I found the performance doesn't increase much after 1000 features. To keep algorithm run in real times, I keep the number of features around 1000. The feature extraction parameters are as follows:
 
 **Sptial feature parameters:**
 
@@ -213,8 +209,6 @@ First, the pixels in each window are cropped and rescaled to 64x64x3, which is t
 
 The classifier gets many False Positives on fences on the left side. It's possible the fences have vertical lines which can be confusing to car images. I also miss the car with darker. Proablby because the color of the car is not very prominent. But, overall the classifier does a good job in finding cars images
 
-
-
 ### 4. Duplicates Removal
 
 Create a heatmap and apply threshold to removal duplicates (multiple detections of the same car)
@@ -226,6 +220,7 @@ Create a heatmap and apply threshold to removal duplicates (multiple detections 
 To eliminate the duplicate, first, a heatmap is built from combining the windows which have car detected. Then a threshold is added to filter out the False Positives. Since False Positives are not consistent. It will be more likely to appear and disappear. The tracking of a vehicle is done across many frames, which will be described in section 5. After the heatmap is thresholded. Use 'label' to find all the disconnected areas. Here is an example shows the heatmap box and labeled areas.
 
 ![alt text][image8]
+
 
 #### 4.2 Estimate Bounding Box
 
@@ -312,16 +307,12 @@ Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U).
 
 From the result, we can see the classifier gets many False Positives, especially on fences on the left side. It possible the fences have vertical lines which can be confusing to car images. Some of them even contain cars form the opposite direction. However, they are filter outed, the red box shows the confirmed cars object. The position of the box is lagged behind, due to the delay introduce by the moving average method.
 
-
-
 ---
 ## Discussion
 
 ### 1. Problems faced in the project
 
-The first issue I faced is that I got good training results on the training dataset, but the poor result on test images from the video stream.
-
-I originally use the `train_test_split` function on the images from the same folder and get very high test accuracy (99%) without any tuning of the parameter. It indicates overfitting. The problem is that the images from the same folder are very similar because they are often cropped from the same video stream. So  I used the images from different folders for the validation and test set. And I found my the linear SVM classifier can only achieve an accuracy of 58%. So, I decided to switch to a more sophisticated classifier with good running time. And I choose random forests.  It gets an initial accuracy of  70% and after tuning the accuracy increase to 84 % on the test set. After the parameter tuning the classifier, the classification improvement a lot, but it still has some miss classifies. 
+The first issue I faced is that I got good training results on the training dataset, but the poor result on test images from the video stream. I originally use the `train_test_split` function on the images from the same folder and get very high test accuracy (99%) without any tuning of the parameter. It indicates overfitting. The problem is that the images from the same folder are very similar because they are often cropped from the same video stream. So  I used the images from different folders for the validation and test set. And I found my the linear SVM classifier can only achieve an accuracy of 58%. So, I decided to switch to a more sophisticated classifier with good running time. And I choose random forests.  It gets an initial accuracy of  70% and after tuning the accuracy increase to 84 % on the test set. After the parameter tuning the classifier, the classification improvement a lot, but it still has some miss classifies. 
 
 The second problem is to reduce the false positives, which mean classifier identify cars which are not there. First, I try to increase the robustness of the classifier by change the threshold  probability. However, I found the classifier have very narrow margin.e.g. Just increase from 50% to 55%, it will miss some true positive. So, I try the second approach by filtering and tracking.  I use moving average method to update a heatmap, a set threshold to filter out results that are not very certain. This method eliminates a lot of false positives because the positives are not persistent, they appear and quickly disappear.
 
