@@ -240,7 +240,7 @@ A bounding box is estimated by drawing a rectangular around the labeled area. He
 
 (The code is is contained in `cell #45`)
 
-I created a 'car' object to track the detected cars, which contrains 4 attribute, `average_centroid`, `width`, `heigh`, `detected`. 
+I created a `car` object to track the detected cars, which contrains 4 attribute, `average_centroid`, `width`, `heigh`, `detected`. 
 The `detected` is a float value to measurement how certain detection is. If the car object is detected in a frame, the value will increases if not the value will decrease. 
 
 I created global variable to tracked for tracking: `heatmap` and `Detected_Cars`.  if an area has vheicle detected `heatmap` will heat up, if not the vehicle is detect will 'cool down'. 'Detected_Cars' is a list of previous detacted car object, if `detected` is below a threldshold, it will be removed from the list. 
@@ -248,62 +248,35 @@ I created global variable to tracked for tracking: `heatmap` and `Detected_Cars`
 
 The the tracking process is discribe as follow: (The code is is contained in `cell #50`)
 
-each frame create a heat map heatmap_new for the window of detected value
-
-the goble valabuble heatmap is updated using moving average. 
-Position in one frame,  
-Record the position of window
-Use tracking to filter out false positive
-
-
-The the new bounding boxes it calculate the distance to see find if there is a nearby car object. If the distance is within a threshold it. Update the car object. 
-
-It not car object is found, it probability a new car. 
-The algorithm create a new car object.
-
-Display car. It only distance car that has detected value higher than threshold. 
-
-This ensure consistency, filter false positive.
- 
-
-Defined car object. Centroid, width, height of the bounding box, and detected.
-
-Moving average algorithm is used to update the value. The advantage in average of a queue of the recent value. It doesn’t need to store previous value
-
-
- In practice, you will want to integrate a heat map over several frames of video, such that areas of multiple detections get "hot", while transient false positives stay "cool". You can then simply threshold your heatmap to remove false positives.
- 
+In each frame, a new heat map `heatmap_new` is created for the window that contains car images. Then the goble valabuble  `heatmap` is updated using the moving average method. 
 
 ```
  heatmap = 0.9*heatmap + 0.1*heatmap_new
 ```
- 
-I use the moving average to update the value, which is shown as follows
+
+The moving average method is shown as follows:
 
 ![alt text][image10]
 
-It is a weighted average of previous average and teh new value.
-The advantage of this method is that it doesn't need to store all the previous value, only keep the value of the previous average
-The old value decrease exponcially and fade out.
+It is a weighted average of the previous average and the new value.The advantage of this method is that it doesn't need to store all the previous values, and only keep the value of the previous average. The old value decreases exponentially and fades out. The `heatmap_sure` threshold the heatmap to show result with more certainty and create `bounding_boxes`
 
- `heatmap_sure` thredhold the heatmap filter out sure is indeed a car, and create bounding_boxes 
-
-
-Then we find find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
+After finding the bounding boxes. I calculate the distance between the centroid of the bounding box to the centroid of previously detected cars to see find if there is a nearby car object.
 
 ```
         car_found, k = track_car(centroids[n],Detected_Cars) 
 ```
 
-if car is fund it update the detected cars centroid and bounding box heigh and width, detected value using moving average
+If the distance is within a threshold. It updates the previous car object, with the new centroid, width, and height using the moving average method.
+
 ```
             Detected_Cars[k].average_centroid = (int(0.9*Detected_Cars[k].average_centroid[0] + 0.1*centroids[n][0]),
                                     int(0.9*Detected_Cars[k].average_centroid[1] + 0.1*centroids[n][1]))         
             Detected_Cars[k].width =   math.ceil(0.9*Detected_Cars[k].width + 0.1*box_size[n][0]) # round up
             Detected_Cars[k].height =  math.ceil(0.9*Detected_Cars[k].height + 0.1*box_size[n][1])
             Detected_Cars[k].detected = Detected_Cars[k].detected + 0.2
-  ```
-if not neear by car is found it add a new car object
+```
+if no car is found nearby, I create a new car object
+
 ```
             new_car = car()  
             new_car.average_centroid = centroids[n]
@@ -311,7 +284,8 @@ if not neear by car is found it add a new car object
             new_car.height = box_size[n][1]            
             New_Cars.append(new_car)
 ```
-combine new_cars to detected cars and loop through the prviuos detected car.  if the detected value greater than the threshold add to the list if not discard
+Then I combine `new_cars` to `Detected_Cars` and loop through the previous `Detected_Cars`.  If the `detected` value is greater than the threshold, it is kept and if not discarded.
+
 ```
     if Detected_Cars2: # if is not empty
         for car in Detected_Cars2:
@@ -319,23 +293,14 @@ combine new_cars to detected cars and loop through the prviuos detected car.  if
                 Detected_Cars.append(car)
 ```
 
-add new car to the list and if previous detacted car is higher thant threshodl it add it too 
+At last, I depreciate the `detected` values, so if a car is no longer detected the value decreases exponentially.
 
 ```
-if Detected_Cars2: # if is not empty
-        for car in Detected_Cars2:
-            if car.detected > 0.17: 
-                Detected_Cars.append(car) 
-   ```
-   
-At last, it depreciate old car values, so if it no longer detacted the value fade away
-  
-  ```
     for car in Detected_Cars:
         car.detected = car.detected*0.8 # depreciate old value
 ```
 
- ### 6. Video pipeline
+ ### 6. Video Pipeline
  
 The pipeline performs the vehicle detection and tracking on each frame.The results are visualized and overlaid on the original images:
 
