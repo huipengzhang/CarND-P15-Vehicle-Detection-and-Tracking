@@ -166,7 +166,7 @@ Random forest algorithm was chosen because it has a good balance of performance 
 The algorithm uses the ensemble of decision trees to give a more robust performance.
 Classification output probability. A threshold will be set up later to reduce the false positive.
 
-Instead of accuracy, the auroc is used as the performance metric to measure the robustness of the algorithm.
+Instead of `accuracy`, the `auroc` is used as the performance metric to measure the robustness of the algorithm.
 
 The tuning parameters including  max_features, max_depth,  min_samples_leaf.
 
@@ -175,8 +175,7 @@ The code for this step is contained in cell # in  the notebook.
 
 Smaller tree depth and max features have a better result, at they turn to use more general rules.
 
-
-n_estimators=100
+n_estimators = 100
 max_features = 2
 min_samples_leaf = 4
 max_depth = 25
@@ -250,6 +249,7 @@ Set a threshold to filter out as noise. And get disconnected areas. Use label to
 Here is an example shows window of the bounding box
 
 ![alt text][image9]
+ 
  
 ### 5. Vehicle Tracking
 
@@ -373,22 +373,17 @@ Moving average algorithm is used to update the value. The advantage in average o
 
 
  ### 6. Video pipeline
-The pipeline works as follows, process the video frame by frame, sliding window to search for car image, create heat map for group overlapping windows, track the detected blog. 
-
-Create a pipline to detect cars in a video stream Visualization:
+ 
+The pipeline performs the vehicle detection and tracking on each frame.The results are visualized and overlaid on the original images:
 
 * Detected windows: Blue boxes
 * Heatmap: Green area
 * Bounding boxes of cars: Red boxes
 
-The produce many False Positives, , especially around theb fences on the left side. 
-It possilble the fences have vertical lines which can be confusing to a cars image.
-
-The white vechile, and dark vehicle can be detected. 
-The threshoding the heat map reduce, the among, hover, it also take a second to confornt it is a car. of lose track.
-
-
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
+From the result, we can see the classifier gets many False Positives, especially on fences on the left side. It possible the fences have vertical lines which can be confusing to car images. Some of them even contain cars form the opposite direction. However, they are filter outed, the red box shows the confirmed cars object. The position of the box is lagged behind, due to the delay introduce by the moving average method.
+
+
 
 ---
 ## Discussion
@@ -401,7 +396,7 @@ I originally use the `train_test_split` function on the images from the same fol
 
 The second problem is to reduce the false positives, which mean classifier identify cars which are not there. First, I try to increase the robustness of the classifier by change the threshold  probability. However, I found the classifier have very narrow margin.e.g. Just increase from 50% to 55%, it will miss some true positive. So, I try the second approach by filtering and tracking.  I use moving average method to update a heatmap, a set threshold to filter out results that are not very certain. This method eliminates a lot of false positives because the positives are not persistent, they appear and quickly disappear.
 
-### 2.Possible failure and improvement
+### 2.Possible failures and improvements
 
 From the final video results, the classifiers still get many False Positives, especially around the fences on the left side. It possible the fences have vertical lines which can be confusing to car images. By setting a threshold on heatmap, I was able to reduce many of the False Positive. However, sometimes the missing the at some frame. The moving average method used to update the position of the bounding box also introduce some delay, as we can see the bounding box is "lagged" behind the vehicle.
 
