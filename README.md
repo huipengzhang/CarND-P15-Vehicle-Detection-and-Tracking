@@ -140,7 +140,7 @@ This step creates a pipeline to extract features from the dataset. The feature e
 
 **Total number of feature:** 968
 
-#### 1.7 Feature Normalization
+#### 1.6 Feature Normalization
 
 (The code is is contained in `cell #16`)
 
@@ -149,7 +149,7 @@ Here is an example of the raw and normalized feature.
 
 ![alt text][image5]
 
-#### 1.8 Make Training, Testing, and Validation set
+#### 1.7 Make Training, Testing, and Validation set
 
 The image in the training set is randomly shuffled. The image in the testing set is divided equally into testing set and validation set.
 
@@ -161,6 +161,8 @@ Testing set   :  3363
 ### 2. Define Classifier
 
 #### 2.1 Tuning Classifier Parameters
+
+(The code is is contained in `cell #23`)
 
 Random forest algorithm was chosen because it has a good balance of performance and speed. The algorithm uses the ensemble of decision trees to give a more robust performance. Classification output probability and a threshold will be set up later to reduce the false positive. 
 
@@ -175,6 +177,8 @@ max_depth = 25
 
 #### 2.2 Evaluate the Classifier
 
+(The code is is contained in `cell #24`)
+
 The performance of the classifier on training testing, and validation set is shown as follows:
 
 Training time: about 3 Seconds
@@ -186,19 +190,22 @@ Validation auroc    = 0.9686
 Validation accuracy = 0.8156
 
 
-### 3. vehiche Detection
+### 3. Vehiche Detection
 
 Using the classifier on sliding windows to detect whether an image contain cars.
 
-#### 3.1 Sliding window search
+#### 3.1 Sliding Window
+
+(The code is is contained in `cell #28`)
 
 Sliding windows are used to crop small images for vehicle classification.To minimize the number of searches, the search area is retained to the area where vehicles are likely to appear.First,  the minimum and maximum size of the window are decided. Then, the intermediate sizes are chosen by interpolation. Here is an example of search windows with different size.
-
 
 ![alt text][image6]
 
 
 #### 3.2 Extract Features form Windows
+
+(The code is is contained in `cell #32`)
 
 First, the pixels in each window are cropped and rescaled to 64x64x3, which is the same as the training image. Then, the classifier determine with the window is a car image or not. Here is an example shows window of the detected vehicle for all the test images:
 
@@ -214,11 +221,15 @@ Create a heatmap and apply threshold to removal duplicates (multiple detections 
 
 #### 4.1 Create a Heatmap
 
+(The code is is contained in `cell #39`)
+
 To eliminate the duplicate, first, a heatmap is built from combining the windows which have car detected. Then a threshold is added to filter out the False Positives. Since False Positives are not consistent. It will be more likely to appear and disappear. The tracking of a vehicle is done across many frames, which will be described in section 5. After the heatmap is thresholded. Use 'label' to find all the disconnected areas. Here is an example shows the heatmap box and labeled areas.
 
 ![alt text][image8]
 
 #### 4.2 Estimate Bounding Box
+
+(The code is is contained in `cell #43`)
 
 A bounding box is estimated by drawing a rectangular around the labeled area. Here is an example shows window of the bounding box:
 
@@ -227,12 +238,15 @@ A bounding box is estimated by drawing a rectangular around the labeled area. He
  
 ### 5. Vehicle Tracking
 
+(The code is is contained in `cell #45`)
+
 I created a 'car' object to track the detected cars, which contrains 4 attribute, `average_centroid`, `width`, `heigh`, `detected`. 
 The `detected` is a float value to measurement how certain detection is. If the car object is detected in a frame, the value will increases if not the value will decrease. 
 
 I created global variable to tracked for tracking: `heatmap` and `Detected_Cars`.  if an area has vheicle detected `heatmap` will heat up, if not the vehicle is detect will 'cool down'. 'Detected_Cars' is a list of previous detacted car object, if `detected` is below a threldshold, it will be removed from the list. 
 
-The the tracking process is discribe as follow:
+
+The the tracking process is discribe as follow: (The code is is contained in `cell #50`)
 
 each frame create a heat map heatmap_new for the window of detected value
 
