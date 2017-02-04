@@ -3,19 +3,19 @@
 
 
 ## Goals and steps
-The goals / steps of this project are the following:
+The goals/steps of this project are the following:
 
 1. Define Features: define features for the vehicle classification including color space feature, color histogram features, and HOG features.
 
-2. Define Classifier: train and fine tune a random forests classifer for vehicle detection
+2. Define Classifier: train and fine tune a random forests classifier  to detect vehicle.
 
-3. Vehicle Detaction: implement a sliding-window technique and use the classifier to determine whether the image contans vehicles
+3. Vehicle Detection: implement a sliding-window technique and use the classifier to determine whether the image contains vehicles
 
-4. Duplicates Removal: create a heatmap to removal dupicates (multiple detection of the same car) and outliers.
+4. Duplicates Removal: create a heatmap to removal duplicates  (multiple detections  of the same car) and outliers.
 
 5. Vehicle Tracking: tracking and estimate a bounding box for vehicles detected.
 
-6. Video Pipline: run the pipeline on a video stream and detect vehicles frame by frame
+6. Video Pipeline: run the pipeline on a video stream and detect vehicles frame by frame
 
 
 Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
@@ -26,7 +26,7 @@ Links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Veh
 
 ## Detail description
 
-The code is contained in the IPython notebook `Object_Detection.ipynb`. I will refer to code location
+The code is contained in the IPython notebook `Vehicle_Detection.ipynb`. I will refer to code location
 using the cell#.
 
 [//]: # (Image References)
@@ -48,30 +48,24 @@ using the cell#.
 
 (The code is is contained in `cell #2`)
 
-Reading in all the directory of car and non-car images. 
-The data is from cropping from video stream, the image from the same fold can be very similar. If just randomly split train and test it will cause the test data leak into the training. Set. 
-So I choose my train and testing data from different folder
-The training data from folder:
-The testing and validation data later splitted. 
+Reading the directory of the car and non-car images. Since the data is from cropping from the video stream, the image from the same fold can be very similar. If just randomly split train and test, it will cause the test data to leak into the training. So I choose the train and testing data from different folders, shown as follows:
 
-
-Training set
+**Training set**
 
 * cars: GTI_far, GTI_left, GTI_right, GTI_MiddleClose 
 * non-cars: Extra
 
-Test set: 
+**Test set**
 
 * cars: KITTI_extracted 
 * non-cars: GTI
 
-#### 0.2 Data summary
+#### 0.2 Data Summary
 
-(The code is is contained in `cell #4`)
+(The code is contained in `cell #4`)
 
-Next, I printed out some basic information of the data set such as number of image in each class, image size, and data type.
-I choose a roughly balanced data set contains 5966 cars image and 5766 non-car images.
-Here is an example of one of each of the vehicle and non-vehicle classes:
+Next, I printed out some basic information of the data set such as the number of the image in each class, image size, and data type.
+I choose a roughly balanced data set, which contains 5966 cars image and 5766 non-car images. Here is an example of one of each of the vehicle and non-vehicle classes:
 
 ![alt text][image1]
 
@@ -80,31 +74,27 @@ Here is an example of one of each of the vehicle and non-vehicle classes:
 
 The next step is to define features for the vehicle classification.Three types of features are used: 
 
-* Color space feature, 
+* Spatial feature
 * Color histogram features 
 * HOG features.
 
 #### 1.1 Convert Image Datatype
 
-(The code is is contained in `cell #6`)
+(The code is contained in `cell #6`)
 
-The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255.
+The images in the training data set are of the jpeg format, with float data values range from 0-1. The test images are of the png format, with int data values range from 0-255. To be consistent with the images type in the later process. I first convert the training image data type to int type with value from 0 to 255.
 
 #### 1.2 Spatial Feature
 
-(The code is is contained in `cell #7`)
+(The code is contained in `cell #7`)
 
-Spatial feature uses the raw pixel values of the images and flattens them into a vector. To reduce the size of the image, I performed spatial binning on an image by resizing the image to the lower resolution.
-
-To reduce the number of features, only the saturation channel in the HLS color space is used, based on the assumption that the saturation channel would be a good representation of the image, because the cars are more likely to have a more prominent appearance.
-
-Here is an example of an image in Satuation Channel and the value of the Spatial features.
+The spatial feature uses the raw pixel values of the images and flattens them into a vector.  I performed spatial binning on an image by resizing the image to the lower resolution. To reduce the number of features, only the saturation channel in the HLS color space is used, based on the assumption that the saturation channel would be a good representation of the image, because the cars are more likely to have a more prominent appearance. Here is an example of an image in Saturation Channel and the value of the Spatial features.
 
 ![alt text][image2]
 
 #### 1.3 Color Histogram Features
 
-(The code is is contained in `cell #9`)
+(The code is contained in `cell #9`)
 
 Color Histogram feature is more robust to the different the appearance of the car.  The Color Histogram remove the structural relation and allow more flexibility to the variance of the image. Binning is performed to the histogram of each channel. Both the RGB and HLS channels are used. 
 
@@ -116,9 +106,7 @@ Here is an example of the color histogram feature in GRB and HLS color space.
 
 (The code is is contained in `cell #11`)
 
-Gradient features is also used to capture the signature for a shape. However use the gradient feature directly is sensitive.  Histogram of gradient orientation allows variation  between the shape. The HOG is on the grey scale image. 
-
-Here is an example of the HOG feature.
+The Histogram of Gradient Orientation (HOG) is also used to capture the signature for a shape and allows variation. The HOG is performed on the gray scale image. Here is an example of the HOG feature.
 
 ![alt text][image4]
 
@@ -128,23 +116,21 @@ Here is an example of the HOG feature.
 
 Create a pipline to extract feature form the dataset.
 
-choosing the parmameters of feature extraction need to balncee performance and running time. 
-After trial and error, I found the performance doesn't increase much after 1000 features. 
-To keep algorithm run in real times, I keep the number of feature around 1000. The feature extraction parameters are:
+This step creates a pipeline to extract features from the dataset. The feature extraction parameters need to balance the performance and running time. After trial and error, I found the performance doesn't increase much after 1000 features. To keep algorithm run in real times, I keep the number of features around 1000. The feature extraction parameters are as follows:
 
-Sptial feature parameters:
+**Sptial feature parameters:**
 
 * spatial = 8 
 * channels:  HLS and RGB
 * Number of feautures: 384
 
-Color histogram feature parameters:
+**Color histogram feature parameters:**
 
 * hist_bins = 12 
 * channels: HLS and RGB
 * Number of feautures: 72
 
-HOG feature parameters:
+**HOG feature parameters:**
 
 * orient = 8
 * pix_per_cell = 12
@@ -152,23 +138,22 @@ HOG feature parameters:
 * channels: Grey scale
 * Number of feautures: 512
 
-Total number of feature: 968
+**Total number of feature:** 968
 
 #### 1.7 Feature Normalization
 
 (The code is is contained in `cell #16`)
 
-The 'standardscaler' scaler is used, which removing the mean and scaling to unit variance. A scaler is training using the training set data and applied to the training and testing set.
-
+The 'StandardScaler()' is used, which removes the mean and scales the features to unit variance. A scaler is training using the training set data and applied to the training and testing set.
 Here is an example of the raw and normalized feature.
 
 ![alt text][image5]
 
 #### 1.8 Make Training, Testing, and Validation set
 
-The image in the training set is randomly shuffled. The image in the testing set is divided e
+The image in the training set is randomly shuffled. The image in the testing set is divided equally into testing set and validation set.
 
-The total number of features: 
+**The number images:**
 Training set  :  11732 
 Validation set:  3363
 Testing set   :  3363
