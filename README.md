@@ -291,16 +291,68 @@ heatmap, Detected_Cars
 each frame create a heat map heatmap_new for the window of detected value
 
 the goble valabuble heatmap is updated using moving average. 
-
+ 
+ heatmap = 0.9*heatmap + 0.1*heatmap_new
+ 
 heatmap_sure thredhold the heatmap filter out sure is indeed a car, and create bounding_boxes 
 
- find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
+find centroy and size of bounding box, loop through each centroid to if is to nd nearby car object       
 
 ```
         car_found, k = track_car(centroids[n],Detected_Cars) 
 ```
 
-
+if car is fund it update the detected cars centroid and bounding box heigh and width, detected value using moving average
+```
+            # update detected car object
+            # update centroid using moving average
+            Detected_Cars[k].average_centroid = (int(0.9*Detected_Cars[k].average_centroid[0] + 0.1*centroids[n][0]),
+                                    int(0.9*Detected_Cars[k].average_centroid[1] + 0.1*centroids[n][1]))         
+            # update bounding box width using moving average
+            Detected_Cars[k].width =   math.ceil(0.9*Detected_Cars[k].width + 0.1*box_size[n][0]) # round up
+            # update bounding box height using moving average
+            Detected_Cars[k].height =  math.ceil(0.9*Detected_Cars[k].height + 0.1*box_size[n][1])
+            # update detected value
+            Detected_Cars[k].detected = Detected_Cars[k].detected + 0.2
+  ```
+if not neear by car is found it add a new car object
+```
+       new_car = car()
+            # inicalize the car object using the size 
+            # and centroid of the bounding box
+            new_car.average_centroid = centroids[n]
+            new_car.width =  box_size[n][0]
+            new_car.height = box_size[n][1]            
+            New_Cars.append(new_car)
+```
+# combine new_cars to detected cars
+    Detected_Cars2 = list(Detected_Cars) # make a copy
+    Detected_Cars = New_Cars[:] # add new cars
+    if Detected_Cars2: # if is not empty
+        for car in Detected_Cars2:
+            # if the detected value greater than the threshold add to the list
+            # if not discard
+            if car.detected > 0.17: 
+                # add to the detected cars list
+                Detected_Cars.append(car)
+            
+add new car to the list and if previous detacted car is higher thant threshodl it add it too 
+```
+if Detected_Cars2: # if is not empty
+        for car in Detected_Cars2:
+            # if the detected value greater than the threshold add to the list
+            # if not discard
+            if car.detected > 0.17: 
+                # add to the detected cars list
+                Detected_Cars.append(car) 
+   ```
+   
+  last it   depreciate old car values, so if it no longer detacted the value fade away
+  
+  ```
+    for car in Detected_Cars:
+        car.detected = car.detected*0.8 # depreciate old value
+```
 
 Heatmap, 
 Update the heat map using moving average algorithm 
