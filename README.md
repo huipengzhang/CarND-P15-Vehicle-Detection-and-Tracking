@@ -46,7 +46,7 @@ using the cell#.
 
 **0.1 Load Image Directory**
 
-(The code is is contained in `cell #2`)
+(The code is contained in `cell #2`)
 
 Reading the directory of the car and non-car images. Since the data is from cropping from the video stream, the image from the same fold can be very similar. If just randomly split train and test, it will cause the test data to leak into the training. So I choose the train and testing data from different folders, shown as follows:
 
@@ -104,7 +104,7 @@ Here is an example of the color histogram feature in GRB and HLS color space.
 
 #### 1.4 Histogram of Oriented Gradients (HOG)
 
-(The code is is contained in `cell #11`)
+(The code is contained in `cell #11`)
 
 The Histogram of Gradient Orientation (HOG) is also used to capture the signature for a shape and allows variation. The HOG is performed on the gray scale image. Here is an example of the HOG feature.
 
@@ -112,7 +112,7 @@ The Histogram of Gradient Orientation (HOG) is also used to capture the signatur
 
 #### 1.5 Extract Features from the Training Images
 
-(The code is is contained in `cell #13`)
+(The code is contained in `cell #13`)
 
 Create a pipline to extract feature form the dataset.
 
@@ -142,7 +142,7 @@ This step creates a pipeline to extract features from the dataset. The feature e
 
 #### 1.6 Feature Normalization
 
-(The code is is contained in `cell #16`)
+(The code contained in `cell #16`)
 
 The `StandardScaler()` is used, which removes the mean and scales the features to unit variance. A scaler is training using the training set data and applied to the training and testing set.
 Here is an example of the raw and normalized feature.
@@ -162,7 +162,7 @@ Testing set   :  3363
 
 #### 2.1 Tuning Classifier Parameters
 
-(The code is is contained in `cell #23`)
+(The code is contained in `cell #23`)
 
 Random forest algorithm was chosen because it has a good balance of performance and speed. The algorithm uses the ensemble of decision trees to give a more robust performance. Classification output probability and a threshold will be set up later to reduce the false positive. 
 
@@ -177,7 +177,7 @@ max_depth = 25
 
 #### 2.2 Evaluate the Classifier
 
-(The code is is contained in `cell #24`)
+(The code is contained in `cell #24`)
 
 The performance of the classifier on training testing, and validation set is shown as follows:
 
@@ -196,7 +196,7 @@ Using the classifier on sliding windows to detect whether an image contain cars.
 
 #### 3.1 Sliding Window
 
-(The code is is contained in `cell #28`)
+(The code is contained in `cell #28`)
 
 Sliding windows are used to crop small images for vehicle classification.To minimize the number of searches, the search area is retained to the area where vehicles are likely to appear.First,  the minimum and maximum size of the window are decided. Then, the intermediate sizes are chosen by interpolation. Here is an example of search windows with different size.
 
@@ -205,7 +205,7 @@ Sliding windows are used to crop small images for vehicle classification.To mini
 
 #### 3.2 Extract Features form Windows
 
-(The code is is contained in `cell #32`)
+(The code is contained in `cell #32`)
 
 First, the pixels in each window are cropped and rescaled to 64x64x3, which is the same as the training image. Then, the classifier determine with the window is a car image or not. Here is an example shows window of the detected vehicle for all the test images:
 
@@ -221,7 +221,7 @@ Create a heatmap and apply threshold to removal duplicates (multiple detections 
 
 #### 4.1 Create a Heatmap
 
-(The code is is contained in `cell #39`)
+(The code is contained in `cell #39`)
 
 To eliminate the duplicate, first, a heatmap is built from combining the windows which have car detected. Then a threshold is added to filter out the False Positives. Since False Positives are not consistent. It will be more likely to appear and disappear. The tracking of a vehicle is done across many frames, which will be described in section 5. After the heatmap is thresholded. Use 'label' to find all the disconnected areas. Here is an example shows the heatmap box and labeled areas.
 
@@ -229,7 +229,7 @@ To eliminate the duplicate, first, a heatmap is built from combining the windows
 
 #### 4.2 Estimate Bounding Box
 
-(The code is is contained in `cell #43`)
+(The code is contained in `cell #43`)
 
 A bounding box is estimated by drawing a rectangular around the labeled area. Here is an example shows window of the bounding box:
 
@@ -238,7 +238,7 @@ A bounding box is estimated by drawing a rectangular around the labeled area. He
  
 ### 5. Vehicle Tracking
 
-(The code is is contained in `cell #45`)
+(The code is contained in `cell #45`)
 
 I created a `car` object to track the detected cars, which contrains 4 attribute, `average_centroid`, `width`, `heigh`, `detected`. 
 The `detected` is a float value to measurement how certain detection is. If the car object is detected in a frame, the value will increases if not the value will decrease. 
@@ -246,7 +246,7 @@ The `detected` is a float value to measurement how certain detection is. If the 
 I created global variable to tracked for tracking: `heatmap` and `Detected_Cars`.  if an area has vheicle detected `heatmap` will heat up, if not the vehicle is detect will 'cool down'. 'Detected_Cars' is a list of previous detacted car object, if `detected` is below a threldshold, it will be removed from the list. 
 
 
-The the tracking process is discribe as follow: (The code is is contained in `cell #50`)
+The the tracking process is discribe as follow: (The code is contained in `cell #50`)
 
 In each frame, a new heat map `heatmap_new` is created for the window that contains car images. Then the goble valabuble  `heatmap` is updated using the moving average method. 
 
@@ -308,7 +308,8 @@ At last, I depreciate the `detected` values, so if a car is no longer detected t
 * Heatmap: Green area
 * Bounding boxes of cars: Red boxes
 
-Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U)
+Here's a [link to my video result](https://www.youtube.com/watch?v=Djb4ydFqc7U).
+
 From the result, we can see the classifier gets many False Positives, especially on fences on the left side. It possible the fences have vertical lines which can be confusing to car images. Some of them even contain cars form the opposite direction. However, they are filter outed, the red box shows the confirmed cars object. The position of the box is lagged behind, due to the delay introduce by the moving average method.
 
 
