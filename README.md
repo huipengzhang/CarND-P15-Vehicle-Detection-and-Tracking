@@ -144,7 +144,7 @@ This step creates a pipeline to extract features from the dataset. The feature e
 
 (The code is is contained in `cell #16`)
 
-The 'StandardScaler()' is used, which removes the mean and scales the features to unit variance. A scaler is training using the training set data and applied to the training and testing set.
+The `StandardScaler()` is used, which removes the mean and scales the features to unit variance. A scaler is training using the training set data and applied to the training and testing set.
 Here is an example of the raw and normalized feature.
 
 ![alt text][image5]
@@ -300,9 +300,9 @@ At last, I depreciate the `detected` values, so if a car is no longer detected t
         car.detected = car.detected*0.8 # depreciate old value
 ```
 
- ### 6. Video Pipeline
- 
-The pipeline performs the vehicle detection and tracking on each frame.The results are visualized and overlaid on the original images:
+### 6. Video Pipeline
+
+ The pipeline performs the vehicle detection and tracking on each frame.The results are visualized and overlaid on the original images:
 
 * Detected windows: Blue boxes
 * Heatmap: Green area
